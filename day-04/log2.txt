@@ -1,0 +1,6 @@
+air:~/Github/ear/advent-of-code-2015/day-03 (master)
+$ n=254575; while [ $n -lt 10000000 ]; do n=$((n+1)); md5 -s "bgvyzdsv${n}"; done | grep 000000
+MD5 ("bgvyzdsv1000000") = 5e51e0ff53d693eda97b988f5a8d9801
+MD5 ("bgvyzdsv1038736") = 000000b1b64bf5eb55aad89986126953
+MD5 ("bgvyzdsv1076061") = 3860000008a6ac33d4f5bec961a1053c
+
