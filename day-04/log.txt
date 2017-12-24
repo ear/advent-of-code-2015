@@ -1,0 +1,17 @@
+air:~/Github/ear/advent-of-code-2015/day-03 (master)
+$ n=0; while [ $n -lt 10000000 ]; do n=$((n+1)); md5 -s "bgvyzdsv${n}"; done | grep 00000
+MD5 ("bgvyzdsv21750") = 30f841d4702bc589d618e7e500a00000
+MD5 ("bgvyzdsv51604") = 200000bd26cadc65b9c221ac5f887215
+MD5 ("bgvyzdsv72002") = 5ef1281f46c155ae000004763580963d
+MD5 ("bgvyzdsv100000") = 3b53e18613b9c6a32190a0d7f63fcae5
+MD5 ("bgvyzdsv154499") = 8b22026929d00862e28cf9000000b288
+MD5 ("bgvyzdsv156125") = 7592d00000f4d909c149116456420c37
+MD5 ("bgvyzdsv180002") = 2b9600000908e352759f416602a946b6
+MD5 ("bgvyzdsv195361") = 0fe619ab36a9a7fe3fdd21a000004d30
+MD5 ("bgvyzdsv198575") = 25aea4bf72f628cba9d08b15ad000009
+MD5 ("bgvyzdsv200000") = aeb661e8063a654d36375d89d08cabb9
+MD5 ("bgvyzdsv219719") = b0e25d8af821800000de419ad4c64c85
+MD5 ("bgvyzdsv230118") = 3fbefd54d393551dac560000027644d8
+MD5 ("bgvyzdsv243671") = 0f0111796000009c8e144ff4cac535ed
+MD5 ("bgvyzdsv254575") = 000004b30d481662b9cb0c105f6549b2
+
