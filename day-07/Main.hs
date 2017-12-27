@@ -1,3 +1,4 @@
+{-# LANGUAGE ViewPatterns #-}
 import Text.Parsec
 import Text.Parsec.String
 
@@ -12,8 +13,11 @@ import System.Environment (getArgs)
 main :: IO ()
 main = do
   [s] <- getArgs
-  Right book <- parseFromFile booklet "input.txt"
-  print . fst . runState (eval (S s)) $ M.fromList book
+  Right (M.fromList -> book) <- parseFromFile booklet "input.txt"
+  let res = evalState (eval (S s)) book
+  print res
+  let book2 = M.insert "b" (N res) book
+  print $ evalState (eval (S s)) book2
 
 data Expr
   = N Word16
@@ -53,16 +57,3 @@ eval (OP name e1 e2) = f <$> eval e1 <*> eval e2
       "OR"     -> (.|.)
       "LSHIFT" -> \x y -> shiftL x (fromIntegral y)
       "RSHIFT" -> \x y -> shiftR x (fromIntegral y)
-
--- the version below was taking forever! god bless the state monad.
-
--- eval book (N x) = x
--- eval book (S s) = eval book $ fromJust (M.lookup book s)
--- eval book (NOT e) = complement (eval book e)
--- eval book (OP op l1 l2) = opf (eval book l1) (eval book l2)
---   where
---     opf = case op of
---       "AND" -> (.&.)
---       "OR"  -> (.|.)
---       "LSHIFT" -> \x y -> shiftL x (fromIntegral y)
---       "RSHIFT" -> \x y -> shiftR x (fromIntegral y)
