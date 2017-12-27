@@ -1,32 +1,68 @@
 import Text.Parsec
 import Text.Parsec.String
 
+import Data.Word
+import Data.Bits
+import qualified Data.Map.Strict as M
+
+import Control.Monad.Trans.State.Lazy
+
+import System.Environment (getArgs)
+
 main :: IO ()
 main = do
+  [s] <- getArgs
   Right book <- parseFromFile booklet "input.txt"
-  mapM_ print book
+  print . fst . runState (eval (S s)) $ M.fromList book
 
 data Expr
-  = N Int
+  = N Word16
   | S String
   | NOT Expr
-  | Op String Expr Expr
+  | OP String Expr Expr
   deriving Show
 
 booklet = do { expr <- choice [ try $ string "NOT " >> NOT <$> lit
-            ;                , try $ op
-            ;                , try $ (N . read) <$> many1 digit
-            ;                , lit ]
-            ; string " -> "
-            ; l <- many1 lower
-            ; return (l,expr) }
-         `sepBy` newline
+                              , try $ op
+                              , try $ (N . read) <$> many1 digit
+                              , lit ]
+             ; string " -> "
+             ; l <- many1 lower
+             ; return (l,expr) }
+          `sepBy` newline
   where
     lit = (try (N . read <$> many1 digit)) <|> (S <$> many1 letter)
     op = do { l1 <- lit
             ; name <- choice [ try $ between space space $ string "AND"
-            ;                , try $ between space space $ string "OR"
-            ;                , try $ between space space $ string "LSHIFT"
-            ;                ,       between space space $ string "RSHIFT" ]
+                             , try $ between space space $ string "OR"
+                             , try $ between space space $ string "LSHIFT"
+                             ,       between space space $ string "RSHIFT" ]
             ; l2 <- lit
-            ; return $ Op name l1 l2 }
+            ; return $ OP name l1 l2 }
+
+eval (N x) = pure x
+eval (S s) = do Just e <- gets (M.lookup s)
+                e' <- eval e
+                modify $ M.insert s (N e') -- memoization
+                return e'
+eval (NOT e) = complement <$> eval e
+eval (OP name e1 e2) = f <$> eval e1 <*> eval e2
+  where
+    f = case name of
+      "AND"    -> (.&.)
+      "OR"     -> (.|.)
+      "LSHIFT" -> \x y -> shiftL x (fromIntegral y)
+      "RSHIFT" -> \x y -> shiftR x (fromIntegral y)
+
+-- the version below was taking forever! god bless the state monad.
+
+-- eval book (N x) = x
+-- eval book (S s) = eval book $ fromJust (M.lookup book s)
+-- eval book (NOT e) = complement (eval book e)
+-- eval book (OP op l1 l2) = opf (eval book l1) (eval book l2)
+--   where
+--     opf = case op of
+--       "AND" -> (.&.)
+--       "OR"  -> (.|.)
+--       "LSHIFT" -> \x y -> shiftL x (fromIntegral y)
+--       "RSHIFT" -> \x y -> shiftR x (fromIntegral y)
