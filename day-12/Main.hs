@@ -3,12 +3,24 @@ import Text.Parsec
 import Text.Parsec.String
 
 main = do
-  Right r <- parseFromFile p "input.txt"
-  print . sum . map (read @Int) $ r
+  r <- parseFromFile thing "input.txt"
+  print r
 
-p = do { skipMany (noneOf "-0123456789")
-       ; n <- (:) <$> option ' ' (char '-') <*> many1 digit
-       ; skipMany (noneOf "-0123456789")
-       ; return n }
-    `sepBy1`
-    (many $ noneOf "-0123456789")
+data JSON
+  = N Int
+  | S String
+  | A [JSON]
+  | O [(String,JSON)]
+  deriving (Show)
+
+thing = choice [ try array, try object, try str, number ]
+
+array = A <$> between (char '[') (char ']') (thing `sepBy` (char ','))
+
+object = O <$> between (char '{') (char '}') (association `sepBy` (char ','))
+
+association = do { S s <- str ; char ':' ; v <- thing ; return (s,v) }
+
+str = S <$> between (char '"') (char '"') (many1 (noneOf "\""))
+
+number = N <$> read @Int <$> ((:) <$> option ' ' (char '-') <*> many1 digit)
