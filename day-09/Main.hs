@@ -17,6 +17,7 @@ main = do
             . map (sequence . map (`pairToDist` m) . tripToPairs)
             $ trips
   print . minimum $ costs
+  print . maximum $ costs
 
 p = do { c1 <- many1 letter
        ; string " to "
