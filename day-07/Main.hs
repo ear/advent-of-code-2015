@@ -46,9 +46,11 @@ booklet = do { expr <- choice [ try $ string "NOT " >> NOT <$> lit
 
 eval (N x) = pure x
 eval (S s) = do Just e <- gets (M.lookup s)
-                e' <- eval e
-                modify $ M.insert s (N e') -- memoization
-                return e'
+                case e of
+                  N _ -> eval e
+                  _   -> do e' <- eval e
+                            modify $ M.insert s (N e') -- memoization
+                            return e'
 eval (NOT e) = complement <$> eval e
 eval (OP name e1 e2) = f <$> eval e1 <*> eval e2
   where
