@@ -15,7 +15,7 @@ p = map (chr . ((+) (ord 'a')))
 
 step = p . carry . next
 
-main = putStrLn . head . filter securityElf . iterate step $ "cqjxjnds"
+main = mapM_ putStrLn . take 2 . filter securityElf . iterate step $ "cqjxjnds"
 
 securityElf xs = and [straight xs, banned xs, twopairs xs]
   where
