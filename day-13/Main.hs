@@ -18,6 +18,10 @@ main = do
       xs = nub . sort . map (fst . fst) $ r
       xss = permutations xs
   print . (happiness m &&& id) . maximumBy (comparing (happiness m)) $ xss
+  let m' = (M.fromList . concatMap (\c -> [(('_',c),0),((c,'_'),0)]) $ xs) `M.union` m
+      ys = '_' : xs
+      yss = permutations ys
+  print . (happiness m' &&& id) . maximumBy (comparing (happiness m')) $ yss
 
 neighbors [a,b,c] = [(b,a),(b,c)]
 
