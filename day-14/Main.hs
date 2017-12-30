@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeApplications, LambdaCase #-}
 
 import Text.Parsec
 import Text.Parsec.String
@@ -8,11 +8,16 @@ import Control.Arrow
 
 main :: IO ()
 main = do
-  Right rs <- parseFromFile p "input.txt"
+  Right rs <- parseFromFile p "test.txt"
   let ps = uncurry zip
-         . second (map $ head . drop 2503 . scanl (+) 0)
+         . second (map $ head . drop 1000)
+         . second (transpose
+                  . scanl (\xs vs -> incrementWinners $ zipWith (+) xs vs)
+                          (replicate (length rs) 0)
+                  . transpose)
          . unzip . map go $ rs
-  print . maximumBy (comparing snd) $ ps
+  mapM_ print . take (length rs) $ ps
+  -- print . maximumBy (comparing snd) $ ps
 
 p = do { n <- many1 letter
        ; string " can fly "
@@ -27,3 +32,8 @@ p = do { n <- many1 letter
     `sepBy` newline
 
 go (name,v,t,tr) = (name, cycle $ (replicate t v) ++ replicate tr 0)
+
+incrementWinners :: [Int] -> [Int]
+incrementWinners = uncurry (zipWith (\case True -> succ; False -> id))
+                 . (uncurry (map . (==)) &&& snd)
+                 . (maximum &&& id)
