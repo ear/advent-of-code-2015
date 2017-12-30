@@ -1,23 +1,24 @@
 {-# LANGUAGE TypeApplications, LambdaCase #-}
+{-# OPTIONS_GHC -Wno-type-defaults -Wno-missing-signatures -Wno-unused-do-bind #-}
 
 import Text.Parsec
 import Text.Parsec.String
 import Data.Ord
 import Data.List
+import Data.Monoid
+import Data.Foldable
 import Control.Arrow
 
 main :: IO ()
 main = do
-  Right rs <- parseFromFile p "test.txt"
+  Right rs <- parseFromFile p "input.txt"
   let ps = uncurry zip
-         . second (map $ head . drop 1000)
-         . second (transpose
-                  . scanl (\xs vs -> incrementWinners $ zipWith (+) xs vs)
-                          (replicate (length rs) 0)
-                  . transpose)
+         . second (map $ getSum . fold . take 2503)
+         . second (transpose . map frontrunners . transpose)
+         . second (map $ tail . scanl (+) 0)
          . unzip . map go $ rs
-  mapM_ print . take (length rs) $ ps
-  -- print . maximumBy (comparing snd) $ ps
+  -- mapM_ print . take (length rs) $ ps
+  print . maximumBy (comparing snd) $ ps
 
 p = do { n <- many1 letter
        ; string " can fly "
@@ -33,7 +34,6 @@ p = do { n <- many1 letter
 
 go (name,v,t,tr) = (name, cycle $ (replicate t v) ++ replicate tr 0)
 
-incrementWinners :: [Int] -> [Int]
-incrementWinners = uncurry (zipWith (\case True -> succ; False -> id))
-                 . (uncurry (map . (==)) &&& snd)
-                 . (maximum &&& id)
+frontrunners = map (\case True -> Sum 1; False -> Sum 0)
+             . uncurry (map . (==))
+             . (maximum &&& id)
