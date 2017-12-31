@@ -1,16 +1,21 @@
 {-# LANGUAGE TypeApplications #-}
 
 import Data.List
+import Control.Arrow
 
 main :: IO ()
 main = do
   -- m <- parse <$> readFile "test.txt"
-  m <- parse <$> readFile "input.txt"
+  (m,m') <- parse <$> readFile "input.txt"
+  mapM_ print m
+  print m'
   -- print . score m $ [44,56]
   print . maximum . map (score m) $ domain
+  print . maximum . map (score m) . filter (cc m') $ domain
 
-parse = transpose
-      . map init
+parse = first transpose
+      . unzip
+      . map (init &&& last)
       . map (map (read @Int) . words)
       . lines
       . filter (`elem` " \n-0123456789")
@@ -28,3 +33,5 @@ score m = product
         . map sum
         . zipWith (zipWith (*)) m
         . replicate (length m)
+
+cc m' = (500==) . sum . zipWith (*) m'
