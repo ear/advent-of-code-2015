@@ -1,16 +1,20 @@
 {-# LANGUAGE TypeApplications #-}
 
+import Data.Ord
 import Data.List
+import Data.Function
 
+main :: IO ()
 main = do
   xs <- map (read @Int) . lines <$> readFile "input.txt"
-  print . length . filter ((150 ==) . sum) . subsets $ xs
+  let cs = filter ((150 ==) . sum) . subsets $ xs
+  print . length $ cs
+  print . length
+        . head
+        . groupBy ((==) `on` length)
+        . sortBy (comparing length)
+        $ cs
 
 subsets :: [a] -> [[a]]
 subsets [] = [[]]
 subsets (x:xs) = let xss = subsets xs in xss ++ map (x:) xss
-
-select :: [a] -> [(a,[a])]
-select xs = let
-  n = length xs
-  in map (\i -> let (ls,(x:rs)) = splitAt i xs in (x,ls++rs)) [0..n-1]
