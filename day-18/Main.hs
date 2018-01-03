@@ -34,10 +34,18 @@ light s c
 
 coords = [ (x,y) | x <- [0..99], y <- [0..99] ]
 
-step (G s) = G $ foldl' (\f c -> light s c . f) id coords s
+step light (G s) = G $ foldl' (\f c -> light s c . f) id coords s
 
 lightsOn (G s) = S.size s
 
 main = do
   g <- read @Grid <$> readFile "input.txt"
-  print . lightsOn . head . drop 100 . iterate step $ g
+  print . lightsOn . head . drop 100 . iterate (step light) $ g
+  let (G s) = g; g' = G $ s `S.union` S.fromList stuck
+  print . lightsOn . head . drop 100 . iterate (step light2) $ g'
+
+stuck = [(0,0),(0,99),(99,99),(99,0)]
+
+light2 s c
+  | c `elem` stuck = id
+  | otherwise      = light s c
