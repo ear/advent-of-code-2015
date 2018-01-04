@@ -1,13 +1,23 @@
-
+{-# LANGUAGE BangPatterns #-}
 import Text.Parsec
 import Text.Parsec.String
 
 import Data.List
 import qualified Data.Set as S
 
+import Debug.Trace
+import Control.Arrow
+
 main = do
   Right (rs,m) <- parseFromFile p "input.txt"
   print . S.size . molecules m $ rs
+  -- print . findIndex (S.member m) . take 8 . iterate (generate (length m) rs) $ S.singleton "e"
+  print . findIndex (S.member "e")
+        . traceShowId
+        . iterate (ungenerate $ map swap rs)
+        $ S.singleton m
+
+swap (a,b) = (b,a)
 
 p = do { rs <- (do { r <- many1 letter ; string " => " ; l <- many1 letter
                    ; return (r,l)
@@ -25,3 +35,9 @@ replace m (from,to) = let
   in replaceAt <$> is
 
 completeMatch m from i = and $ zipWith (==) from (drop i m)
+
+generate n rs s = foldl' (f n s) S.empty rs
+
+f n s s' (from,to) = S.union s' (S.fromList $ filter ((<= n) . length) . (`replace` (from,to)) =<< S.toList s)
+
+ungenerate rs !s = S.fromList $ (\m -> replace m =<< rs) =<< S.toList s
