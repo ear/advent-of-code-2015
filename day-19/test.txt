@@ -1,7 +1,8 @@
 B => AA
-A => bar
+B => CC
 e => B
-C => baz
-A => C
+C => bar
+A => Z
+Z => bar
 
-barbaz
+barbar
