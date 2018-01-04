@@ -7,17 +7,15 @@ import qualified Data.Set as S
 
 import Debug.Trace
 import Control.Arrow
+import Data.Maybe
 
 main = do
   Right (rs,m) <- parseFromFile p "input.txt"
   print . S.size . molecules m $ rs
-  -- print . findIndex (S.member m) . take 8 . iterate (generate (length m) rs) $ S.singleton "e"
-  print . findIndex (S.member "e")
-        . traceShowId
-        . iterate (ungenerate $ map swap rs)
-        $ S.singleton m
+  let swap (a,b) = (b,a)
+      rs' = swap <$> rs
+  print . f 0 0 rs' $ m
 
-swap (a,b) = (b,a)
 
 p = do { rs <- (do { r <- many1 letter ; string " => " ; l <- many1 letter
                    ; return (r,l)
@@ -36,8 +34,24 @@ replace m (from,to) = let
 
 completeMatch m from i = and $ zipWith (==) from (drop i m)
 
-generate n rs s = foldl' (f n s) S.empty rs
-
-f n s s' (from,to) = S.union s' (S.fromList $ filter ((<= n) . length) . (`replace` (from,to)) =<< S.toList s)
-
-ungenerate rs !s = S.fromList $ (\m -> replace m =<< rs) =<< S.toList s
+f n _ _ "e"    = Just [n]
+f n i rs m
+  | i == length rs = Just []
+  | otherwise      = let
+    r@(from,to) = rs !! i
+    is = filter (completeMatch m from) $! findIndices (head from ==) m
+    -- !_ = traceShowId r
+    !_ = let foo = replace m r
+             bar = length <$> foo
+         in case length foo of
+              0 -> []
+              n -> case n < 21 of
+                True -> []
+                False -> traceShowId [(n,i,r,foo,length <$> foo)]
+              -- case null $ filter (<60) bar of
+              --        True -> []
+              --        False -> traceShowId [(bar, foo)]
+    in case null is of
+      True -> f n (i+1) rs m
+      False -> let cases = filter ((`elem` "eO") . head) $ replace m r
+               in Just $ concat $ catMaybes $ f (n+1) 0 rs <$> cases
