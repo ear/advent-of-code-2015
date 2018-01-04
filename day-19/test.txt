@@ -1,8 +1,9 @@
+Z => bar
+C => bar
+A => Z
+Z => A
 B => AA
 B => CC
 e => B
-C => bar
-A => Z
-Z => bar
 
 barbar

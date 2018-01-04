@@ -10,13 +10,20 @@ import qualified Data.Set as S
 import Debug.Trace
 import Control.Arrow
 import Data.Maybe
+import Data.Ord
+import Data.Graph
+import Data.Function
 
 main = do
-  Right (rs,m) <- parseFromFile p "input.txt"
-  print . S.size . molecules m $ rs
+  Right (rs,m) <- parseFromFile p "test.txt"
+  -- print . S.size . molecules m $ rs
   let swap (a,b) = (b,a)
-      rs' = swap <$> rs
-  print . f 0 [] 0 rs' $ m
+      rs' = reverse $ sortBy (comparing (length . fst)) $ swap <$> rs
+  -- print . search m (length m) rs 0 [] 0 $ "e"
+  -- print . search m (length m) rs 0 $ "e"
+  print rs'
+  -- print . search "e" rs' 0 $ m
+  -- let g = graphFromEdges
 
 
 p = do { rs <- (do { r <- many1 letter ; string " => " ; l <- many1 letter
@@ -36,14 +43,24 @@ replace m (from,to) = let
 
 completeMatch m from i = and $ zipWith (==) from (drop i m)
 
-f n ns _ _ "e"     = n:ns
-f n ns i rs m
-  | i == length rs = ns
-  | otherwise      = let
-    r@(from,to) = rs !! i
-    !cases = replace m r
-    !ns' = f (n+1) ns 0 rs <$> cases
-    in concat ns' ++ f n ns (i+1) rs m
 
-t _ [] = []
-t n xs = traceShow (n,xs) xs
+
+search needle rs n m
+  | needle == m = traceShowId $! [n]
+  | otherwise = search needle rs (n+1) =<< (replace m =<< rs)
+
+
+
+-- search needle _ _  n m | needle == m = traceShowId $! [n]
+-- search needle l rs n m = let
+--     !expansions = filter ((<= l) . length) $ replace m =<< rs
+--     in search needle l rs (n+1) =<< expansions
+
+-- search needle _ _  n _  _ m | needle == m = [n]
+-- search needle l rs n ns i m
+--   | i == length rs = ns
+--   | otherwise      = let
+--     !r = rs !! i
+--     !expansions = filter ((<= l) . length) $ replace m r
+--     !ns' = search needle l rs (n+1) [] 0 =<< expansions
+--     in search needle l rs n (ns ++ ns') (i+1) m
