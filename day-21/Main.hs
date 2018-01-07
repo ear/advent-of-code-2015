@@ -1,27 +1,53 @@
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeApplications, ViewPatterns #-}
 
 import Text.Parsec
 import Text.Parsec.String
 
+import Data.Ord
 import Data.List
 
+import Control.Arrow
+
 main = do
-  Right r <- parseFromFile p "input.txt"
-  print r
+  Right op <- parseFromFile p "input.txt"
+  print op
   print $ length inventories
+  let ps = (playerFromInventory &&& id) <$> inventories
+      winners = filter ((`beats` op) . fst) $ ps
+  print . length $ winners
+  let cheapest = minimumBy (comparing (cost . snd)) $ winners
+  print cheapest
+  print . cost . snd $ cheapest
+
+cost
+  (I (sum . map wcost -> ws) (sum . map acost -> as) (sum . map rcost -> rs)) =
+    ws + as + rs
+
+beats p1 op = p1 `kill` op <= op `kill` p1
+
+kill (pdmg -> d) op = ceiling $
+  fromIntegral (php op) / fromIntegral (d - parmor op)
+
+data Player = P { php :: Int, pdmg :: Int, parmor :: Int }
+  deriving (Show)
+
+playerFromInventory i@(I (map wdmg -> ds) (map aarmor -> as) rs) =
+  P { php = 100
+    , pdmg = sum ds + sum (map rdmg rs)
+    , parmor = sum as + sum (map rarmor rs) }
 
 subsets [] = [[]]
 subsets (x:xs) = let xss = subsets xs in xss ++ map (x:) xss
 
-choose n = filter ((<= n) . length) . subsets
+choose n = filter ((n ==) . length) . subsets
 
 data Inventory = I [Weapon] [Armor] [Ring] deriving (Show)
 
 inventories =
   [ I ws as rs
   | ws <- choose 1 weapons
-  , as <- choose 1 armors
-  , rs <- choose 2 rings ]
+  , as <- [0,1] >>= (`choose` armors)
+  , rs <- [0,1,2] >>= (`choose` rings) ]
 
 data Weapon = W { wname :: String, wcost :: Int, wdmg :: Int, warmor :: Int }
   deriving (Show)
@@ -53,7 +79,7 @@ rings =
 p = do { string "Hit Points: "; hp <- number; newline
        ; string "Damage: "; d <- number; newline
        ; string "Armor: "; a <- number
-       ; return (hp,d,a)
+       ; return P { php = hp, pdmg = d, parmor = a }
        }
   where
     number = read @Int <$> many1 digit
