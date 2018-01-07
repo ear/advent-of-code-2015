@@ -13,17 +13,23 @@ main = do
   print op
   print $ length inventories
   let ps = (playerFromInventory &&& id) <$> inventories
-      winners = filter ((`beats` op) . fst) $ ps
+      (winners,losers) = partition ((`beats` op) . fst) $ ps
   print . length $ winners
   let cheapest = minimumBy (comparing (cost . snd)) $ winners
   print cheapest
   print . cost . snd $ cheapest
+  let steepest = maximumBy (comparing (cost . snd)) $ losers
+  print steepest
+  print . cost . snd $ steepest
 
 cost
   (I (sum . map wcost -> ws) (sum . map acost -> as) (sum . map rcost -> rs)) =
     ws + as + rs
 
-beats p1 op = p1 `kill` op <= op `kill` p1
+beats p1 op = let
+  t1 = p1 `kill` op
+  t2 = op `kill` p1
+  in t1 > 0 && t1 <= abs t2
 
 kill (pdmg -> d) op = ceiling $
   fromIntegral (php op) / fromIntegral (d - parmor op)
