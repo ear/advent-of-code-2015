@@ -27,11 +27,16 @@ data Effect = E
   deriving Show
 
 spells =
-  [ S "Magic Missile"  53 $ E 0   0 0 4 0
-  , S "Drain"          73 $ E 0   0 2 2 0
-  , S "Shield"        113 $ E 6   0 0 3 0
-  , S "Poison"        173 $ E 6   0 3 0 0
-  , S "Recharge"      229 $ E 5 101 0 0 0 ]
+  [ S "Magic Missile"  53 $
+    E { eturns = 0, emana =   0, ehealth = 0, edmg = 4, earmor = 0 }
+  , S "Drain"          73 $
+    E { eturns = 0, emana =   0, ehealth = 2, edmg = 2, earmor = 0 }
+  , S "Shield"        113 $
+    E { eturns = 6, emana =   0, ehealth = 0, edmg = 3, earmor = 0 }
+  , S "Poison"        173 $
+    E { eturns = 6, emana =   0, ehealth = 3, edmg = 0, earmor = 0 }
+  , S "Recharge"      229 $
+    E { eturns = 5, emana = 101, ehealth = 0, edmg = 0, earmor = 0 } ]
 
 p = do { string "Hit Points: "; hp <- number; newline
        ; string "Damage: "; d <- number
