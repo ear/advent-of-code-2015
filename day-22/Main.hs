@@ -32,7 +32,7 @@ spells =
   , S "Drain"          73 $
     E { eturns = 0, emana =   0, ehealth = 2, edmg = 2, earmor = 0 }
   , S "Shield"        113 $
-    E { eturns = 6, emana =   0, ehealth = 0, edmg = 3, earmor = 0 }
+    E { eturns = 6, emana =   0, ehealth = 0, edmg = 0, earmor = 7 }
   , S "Poison"        173 $
     E { eturns = 6, emana =   0, ehealth = 3, edmg = 0, earmor = 0 }
   , S "Recharge"      229 $
