@@ -11,6 +11,25 @@ import Control.Arrow
 main = do
   Right op <- parseFromFile p "input.txt"
   print op
+  -- magic missile-only strat
+  putStrLn "=== Magic Missile-only strategy ==="
+  putStr "boss kills player in #turns: "
+  print $ php player `divMod` pdmg op
+  putStr "player kills boss in #turns: "
+  print $ php op `divMod` edmg (seffect $ spells !! 0)
+  -- shield-once, then magic missile
+  putStrLn "=== Shield-once, then Magic Missile strategy ==="
+  let hp = php player
+      dmg = pdmg op
+      effs = 0 : replicate 6 7 ++ repeat 0
+      dmgs = cycle [0,dmg]
+      herolife = scanl (\h (e,d) -> h + e - d) hp $ zip effs dmgs
+      heroalivespan = span (>=0) herolife
+  putStr "boss kills player in #turns: "
+  print . length . fst $ heroalivespan
+  putStr "player kills boss in #turns: "
+  print $ (succ *** id) $ php op `divMod` edmg (seffect $ spells !! 0)
+  putStrLn "only problem, we run out of mana, so have to Recharge too (:"
 
 data Player = P
   { php :: Int, pmana :: Int, pdmg :: Int, parmor :: Int }
