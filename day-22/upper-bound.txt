@@ -1,0 +1,42 @@
+
+opp starts at 58 hp
+opp does 9 dmg
+
+         cost   mana                            shield hp   opp
+                500                             0      50   58
+shield   113    387                             7           58
+opp                                             7      48
+recharge 229    158                             7           58
+opp           r 259                             7      46
+poison   173  r 360-173=196                     7           58
+opp           r 461    =297                     7      44 p 55
+shield   113  r 562    =398-113=285             7         p 52
+opp           r 663    =499    =386             7      42 p 49
+missile   53    _               333             7         p 46-4=42
+opp             _                               7      40 p 43   39
+missile   53    _               280             7         p 40   36-4=32
+opp             _                               7      38   40   36   29 -- W
+recharge 229    _                51             0      38   29
+opp           r _               152             0      29
+shield   113  r                 253-113=140     7      29
+opp           r                 241             7      27
+poison   173  r                 241+101-173=515 7
+opp           r                 616             7      25 p 26
+missile   53                    563             7         p 23-4=19
+opp                                             7      23 p 20   16
+missile   53                    510                       p 17   13-4=9
+opp                                                    14 p 14        6
+missile   53                    457                       p 11        2
+opp                                                     5
+missile   53                    404                                   0
+
+total:  1461
+
+turns out it's not a minimum, but at least now I have a bound!
+
+N.B. "-- W" means this is a victorious position, the stragegy following it could
+be different and still work and/or cost less. Maybe even the missiles before.
+
+I went for maximizing damage but not using drain at all is suspicious.
+
+I imagine a cheaper stragegy could be longer, and it might involve draining?
