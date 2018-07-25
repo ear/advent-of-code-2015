@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 {-# OPTIONS_GHC -Wno-missing-signatures -Wno-unused-do-bind
     -Wno-unused-imports -Wno-type-defaults #-}
 import Text.Parsec
@@ -7,24 +6,19 @@ import Text.Parsec.String
 import Data.List
 import qualified Data.Set as S
 
-import Debug.Trace
-import Control.Arrow
-import Data.Maybe
+import Data.Semigroup
+import Data.Monoid
+
 import Data.Ord
-import Data.Graph
-import Data.Function
+
+import Debug.Trace
 
 main = do
-  Right (rs,m) <- parseFromFile p "test.txt"
+  Right (rs,m) <- parseFromFile p "input.txt"
   -- print . S.size . molecules m $ rs
   let swap (a,b) = (b,a)
       rs' = reverse $ sortBy (comparing (length . fst)) $ swap <$> rs
-  -- print . search m (length m) rs 0 [] 0 $ "e"
-  -- print . search m (length m) rs 0 $ "e"
-  print rs'
-  -- print . search "e" rs' 0 $ m
-  -- let g = graphFromEdges
-
+  print $ steps m rs'
 
 p = do { rs <- (do { r <- many1 letter ; string " => " ; l <- many1 letter
                    ; return (r,l)
@@ -32,6 +26,8 @@ p = do { rs <- (do { r <- many1 letter ; string " => " ; l <- many1 letter
        ; newline ; m <- many1 letter ; eof
        ; return (rs, m)
        }
+
+-- Part 1
 
 molecules m = foldl' (\s -> S.union s . S.fromList . replace m) S.empty
 
@@ -43,24 +39,19 @@ replace m (from,to) = let
 
 completeMatch m from i = and $ zipWith (==) from (drop i m)
 
+-- Part 2
 
-
-search needle rs n m
-  | needle == m = traceShowId $! [n]
-  | otherwise = search needle rs (n+1) =<< (replace m =<< rs)
-
-
-
--- search needle _ _  n m | needle == m = traceShowId $! [n]
--- search needle l rs n m = let
---     !expansions = filter ((<= l) . length) $ replace m =<< rs
---     in search needle l rs (n+1) =<< expansions
-
--- search needle _ _  n _  _ m | needle == m = [n]
--- search needle l rs n ns i m
---   | i == length rs = ns
---   | otherwise      = let
---     !r = rs !! i
---     !expansions = filter ((<= l) . length) $ replace m r
---     !ns' = search needle l rs (n+1) [] 0 =<< expansions
---     in search needle l rs n (ns ++ ns') (i+1) m
+-- 1. make a Set of all the possible substitutions of the current molecules (ms)
+-- 2. [heuristic] keep a only number (40) of the shortest molecules (minLen')
+-- 3. repeat until "e" appears in the Set
+-- Funnily… it worked! Tried 10, 20, and at 40 it got there.
+steps :: String -> [(String,String)] -> Int
+steps m = go 0 (S.singleton m)
+  where
+    go n ms rs
+      | S.null ms = -1
+      | "e" `S.member` ms = n
+      | otherwise = traceShow (n,length ms,length <$> S.toList ms) $ go (n+1) cs rs
+        where cs' = S.fromList $! rs >>= \r -> S.toList ms >>= \m -> replace m r
+              minLen' = getMin $ foldMap (Min . length) cs'
+              cs = S.take 40 $ S.filter ((<= minLen') . length) cs'
