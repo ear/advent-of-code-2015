@@ -77,16 +77,6 @@ mkS php pmana bhp bdmg = State
 pp :: State -> [Spell]
 pp State{pSpells} = reverse pSpells
 
--- -- | given a state compute the possible spells to cast and their respective states
--- nexts :: State -> [(Spell, State)]
--- nexts (tickEffects -> s@State{..}) = do
---   spell <- Set.toList . available $ s
---   let s' | hasEffect spell = s { pAvail = Set.delete spell pAvail
---                                , pActive = Map.insert spell (duration spell) pActive
---                                , pSpells = spell : pSpells }
---          | otherwise = s
---   return (spell, s')
-
 -- | given a state compute the boss turn
 boss :: State -> State
 boss (tickEffects -> s@State{..}) = s { pHp = pHp - dmg }
@@ -122,20 +112,6 @@ cast spell s0@State{..}
     s1 = s0 { pMana = pMana - cost spell
             , pSpells = spell : pSpells }
 
--- castEffect spell s0@State{..} = spell s1
---   where
---     s1 = s0 { pMana = pMana - cost spell
---             , pSpells = spell : pSpells }
-
--- cast :: Spell -> State -> State
--- cast spell s0@State{..} = performSpell spell $
---                             s1 { pMana = pMana - cost spell
---                                , pSpells = spell : pSpells }
---   where
---     s1 | hasEffect spell = s0 { pAvail  = Set.delete spell pAvail
---                               , pActive = Map.insert spell (duration spell) pActive }
---        | otherwise = s0
-
 hasEffect :: Spell -> Bool
 hasEffect S = True
 hasEffect P = True
@@ -162,11 +138,6 @@ performEffect _ = error "performEffect on a Spell"
 undoEffect :: Spell -> State -> State
 undoEffect S = \s@State{..} -> s { pArmor = 0 }
 undoEffect _ = id
-
--- pruning di matteo
--- 1. sommare #D * 2 + #M * 4 + #P * 17, se minore di bHp, escludere
--- 2. sommare il mana usato, se maggiore 500 + numero di r * 505, escludere
--- 3. sommare pHp + numero di shield * 21 + numero di drain * 2 > (lunghezza stringa - 1) * 9
 
 spellCost :: [Spell] -> Int
 spellCost = getSum . foldMap (Sum . cost)
