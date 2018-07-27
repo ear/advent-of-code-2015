@@ -13,12 +13,19 @@ import qualified Data.Set as Set
 import Data.Map ( Map )
 import qualified Data.Map.Strict as Map
 
+import Control.Monad ( guard )
+
 import System.Environment ( getArgs )
 
 main = mapM_ print
      $ sortBy (comparing $ pSpent)
      $ filter (\State{..} -> pHp > 0 && bHp < 1)
      $ turn 18
+     $ (mkS 50 500 58 9)
+
+turn 1 = nexts
+turn n | even n = (boss <$>) . turn (n-1)
+       | odd n = (nexts =<<) . turn (n-1)
 
 data Spell
   = M -- Magic Missle
@@ -89,6 +96,7 @@ boss (tickEffects -> s@State{..}) = s { pHp = pHp - dmg }
 -- | given a state compute the possible spells to cast and their respective states
 nexts :: State -> [State]
 nexts (tickEffects -> state) = do
+  guard (pHp state > 0)
   spell <- Set.toList $ available state
   return $ cast spell state
 
@@ -142,7 +150,3 @@ performEffect _ = error "performEffect on a Spell"
 undoEffect :: Spell -> State -> State
 undoEffect S = \s@State{..} -> s { pArmor = 0 }
 undoEffect _ = id
-
-turn 1 = nexts (mkS 50 500 58 9)
-turn n | even n = boss <$> turn (n-1)
-       | odd n = turn (n-1) >>= nexts
