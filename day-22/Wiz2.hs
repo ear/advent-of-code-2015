@@ -16,8 +16,7 @@ import qualified Data.Map.Strict as Map
 import System.Environment ( getArgs )
 
 main = mapM_ print
-     $ sortBy (comparing fst)
-     $ map (\s -> (spellCost (pSpells s), s))
+     $ sortBy (comparing $ pSpent)
      $ filter (\State{..} -> pHp > 0 && bHp < 1)
      $ turn 18
 
@@ -114,7 +113,8 @@ cast spell (hardMode -> s0@State{..})
   | otherwise = performSpell spell s1
   where
     s1 = s0 { pMana = pMana - cost spell
-            , pSpells = spell : pSpells }
+            , pSpells = spell : pSpells
+            , pSpent = pSpent + cost spell }
 
 hasEffect :: Spell -> Bool
 hasEffect S = True
@@ -142,9 +142,6 @@ performEffect _ = error "performEffect on a Spell"
 undoEffect :: Spell -> State -> State
 undoEffect S = \s@State{..} -> s { pArmor = 0 }
 undoEffect _ = id
-
-spellCost :: [Spell] -> Int
-spellCost = getSum . foldMap (Sum . cost)
 
 turn 1 = nexts (mkS 50 500 58 9)
 turn n | even n = boss <$> turn (n-1)
