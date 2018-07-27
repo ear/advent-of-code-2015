@@ -81,7 +81,8 @@ pp State{pSpells} = reverse pSpells
 boss :: State -> State
 boss (tickEffects -> s@State{..}) = s { pHp = pHp - dmg }
   where
-    dmg = max 1 (bDmg - pArmor)
+    dmg | bHp <= 0  = 0
+        | otherwise = max 1 (bDmg - pArmor)
 
 -- | given a state compute the possible spells to cast and their respective states
 nexts :: State -> [State]

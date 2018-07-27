@@ -82,9 +82,8 @@ hardMode s@State{..} = s { pHp = pHp - 1 }
 
 -- | given a state compute the boss turn
 boss :: State -> State
-boss s0 = s1 { pHp = pHp - dmg }
+boss (tickEffects -> s@State{..}) = s { pHp = pHp - dmg }
   where
-    s1@State{..} = tickEffects s0
     dmg | bHp <= 0  = 0
         | otherwise = max 1 (bDmg - pArmor)
 
