@@ -19,7 +19,7 @@ main = mapM_ print
      $ sortBy (comparing fst)
      $ map (\s -> (spellCost (pSpells s), s))
      $ filter (\State{..} -> pHp > 0 && bHp < 1)
-     $ boss <$> nexts (mkS 50 500 58 9) >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= (boss <$>) . nexts >>= nexts
+     $ turn 17
 
 data Spell
   = M -- Magic Missle
@@ -170,3 +170,7 @@ undoEffect _ = id
 
 spellCost :: [Spell] -> Int
 spellCost = getSum . foldMap (Sum . cost)
+
+turn 1 = nexts (mkS 50 500 58 9)
+turn n | even n = boss <$> turn (n-1)
+       | odd n = turn (n-1) >>= nexts
