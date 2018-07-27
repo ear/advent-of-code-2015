@@ -1,0 +1,120 @@
+
+S 113
+P 173
+-- M 229
+
+M 53
+D 73
+S 18,833333333
+P 28,833333333
+R -101
+
+S+P = 286
+S+P+M+M = 392
+
+p S 
+b
+p P 
+b
+p M 
+b
+p M 
+b
+p 
+
+p b p b p b p b
+S _ P _ 
+
+
+
+
+
+
+
+R M
+
+           100
+R -100+500 500
+M     -100 400
+
+
+R..R..R..R..R..R
+ MM MM MM MM MM
+
+RPMRMPRMM RPMRMPRMM RPMRMPRMM
+
+RPM RMP RMM
+
+
+
+M fa 2 a TURNO
+P fa 2,25 a TURNO * 8 = 18 danni
+
+
+  pbpbpbpb pbpbpbpb 
+P 03333330 03333330 \_ 60 (2 extra)
+M   4 4 4    4 4 4  /
+b  9 9 9 9  9 9 9 9 = 72 (-22)
+
+S guadagna 16.5, ci servono 2 shield per un totale di 33
+
+  pbpbpbpb pbpbpbpb pbpbpbpb
+P 03333330 03333330      \
+S   0..... ._0..... ._    |- 60
+M     4 4      4 4  4 4  /
+b  9 2 2 2  9 2 2 2  9  = 41
+
+2P 2*173+
+2S 2*113+
+6M 6*53   == 890
+
+R da 276 quindi ne servono 2 per un totale di 552
+
+  pbpbpbpb pbpbpbpb pbpbpbpb
+P 03333330 03333330 03333330 \
+S   s..... ._s..... ._        |_ 64
+R     r... ..  r... ..        |
+M       4        4    4 4    /
+b  9 2 2 2  9 2 2 2  9 9  = 48
+
+890+120=1010
+
+500+552=1052
+
+PSRMPSRMPMM
+3*173+2*113+2*229+4*53 = 1415
+
+  costo danni danno/mana
+P   173    18 0.104
+M    53     4 0.075
+D    73     2 0.027
+    173    12 0.069 <- 2/3rd of P
+
+
+mana legality
+173+
+113+
+229 = 515
+
+  pbpbpbpb pbpbpbpb pbpbpbpb pb
+P p333333.   p33333 3.p33333 3. \
+R   r..... r.....                |
+S     s... ..._s... ..._         |_ 64
+M       4        4  4   4       /
+b  9 2 2 2  9 2 2 2  9 9  = 48
+
+173+229 = 402
+113+53+173 = 339
+339+229
+
+
+  pbpbpbpb pbpbpbpb pbpbpbpb pb
+P p333333.   p33333 3.p33333 3. \
+R   r..... r.....                |
+S     s... ..._s... ..._         |_ 64
+M       4        4  4   4       /
+b  9 2 2 2  9 2 2 2  9 9  = 48
+
+
+
+
