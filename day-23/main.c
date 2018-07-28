@@ -4,7 +4,7 @@
 int main() {
   uint64_t a = 0;
   uint64_t b = 0;
-  a = 9663;
+  a = 59049 + 18622; // a = 9663;
   while (a != 1) {
     b = b + 1;
     if (a % 2 == 0)
