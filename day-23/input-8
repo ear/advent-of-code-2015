@@ -1,0 +1,10 @@
+    a = 9663
+    GOTO L2
+    a = 59049*a+18622
+L2: while (a != 1) {
+      b = b+1
+      if (even a)
+        a = a/2
+      else
+        a = 3*a+1
+    }

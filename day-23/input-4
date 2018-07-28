@@ -1,0 +1,15 @@
+    if (a == 1)
+      GOTO L1
+    a = 6561*a+9663 = 3*(2187a+3221)
+    GOTO L2
+L1: a = 59049*a+18622
+L2: if (a == 1)
+      GOTO L3
+    b = b+1
+    if (even a)
+      GOTO L4
+    a = 3*a+1
+    GOTO L5
+L4: a = a/2
+L5: GOTO L2
+L3:

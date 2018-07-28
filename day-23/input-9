@@ -1,0 +1,8 @@
+a = 9663
+while (a != 1) {
+  b = b+1
+  if (even a)
+    a = a/2
+  else
+    a = 3*a+1
+}
